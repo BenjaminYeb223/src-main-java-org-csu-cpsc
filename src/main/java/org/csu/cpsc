@@ -1,0 +1,182 @@
+package org.csu.cpsc;
+
+public class TaskManager implements TaskManagerInterface {
+
+    private Task[] tasks; 
+    private int taskCount; 
+
+    public TaskManager() {
+        tasks = new Task[10]; 
+        taskCount = 0;        
+    }
+
+    @Override
+    public boolean addTask(Task task) {
+        if (taskCount < tasks.length) { 
+            tasks[taskCount] = task;    
+            taskCount++;                
+            return true;                
+        }
+        return false;                   
+    }
+
+   @Override
+    public Task removeTask(int index) {
+        if (index >= 0 && index < taskCount) { 
+            Task removedTask = tasks[index]; 
+            
+            for (int i = index; i < taskCount - 1; i++) {
+                tasks[i] = tasks[i + 1];
+            }
+            tasks[taskCount - 1] = null; 
+            taskCount--;                 
+            return removedTask;          
+        }
+        return null; 
+    }
+
+    @Override
+    public String printTaskList() {
+        String taskList = "Task List:\n";
+        for (int i = 0; i < taskCount; i++) {
+            taskList += (i + 1) + ". " + tasks[i].getName() + "\n";
+        }
+        return taskList; 
+    }
+
+    @Override
+    public String printTaskListDetailed() {
+        String taskDetails = "Detailed Task List:\n";
+        for (int i = 0; i < taskCount; i++) {
+            Task task = tasks[i];
+            taskDetails += (i + 1) + ". " + task.getName() + " - " + task.getTimeLogged() + " mins - " + task.getDescription() + "\n";
+        }
+        return taskDetails; 
+    }
+
+    @Override
+    public boolean updateTaskTimeLogged(int index, int time) {
+        if (index >= 0 && index < taskCount) { 
+            tasks[index].setTimeLogged(time); 
+            return true; 
+        }
+        return false; 
+    }
+}
+
+package org.csu.cpsc;
+
+public class Main {
+    public static void main(String[] args) {
+        Task t1 = new Task("Dishes", 30, "Wash the dishes");
+        Task t2 = new Task("Prep for class", 90, "Prep for Data Structures");
+
+        System.out.println("Task 1 Details:");
+        System.out.println(t1.toString());
+        System.out.println("\nTask 2 Details:");
+        System.out.println(t2.toString());
+
+        t1.setName("Clean Dishes");
+        t1.setDescription("Wash and dry the dishes thoroughly");
+        t1.setOriginalDuration(45);
+        t1.setTimeLogged(15);
+
+        System.out.println("\nUpdated Task 1 Details:");
+        System.out.println("Name: " + t1.getName());
+        System.out.println("Description: " + t1.getDescription());
+        System.out.println("Original Duration: " + t1.getOriginalDuration());
+        System.out.println("Time Logged: " + t1.getTimeLogged());
+
+        TaskManager manager = new TaskManager();
+
+        System.out.println("\nAdding Tasks to TaskManager:");
+        System.out.println("Add Task 1: " + manager.addTask(t1));
+        System.out.println("Add Task 2: " + manager.addTask(t2));
+        
+        for (int i = 3; i <= 6; i++) {
+            boolean added = manager.addTask(new Task("Task " + i, i * 30, "Description for Task " + i));
+            System.out.println("Add Task " + i + ": " + added);
+        }
+
+        System.out.println("\nTask List:");
+        System.out.println(manager.printTaskList());
+
+        System.out.println("\nRemoving Task at Index 2:");
+        Task removedTask = manager.removeTask(2);
+        if (removedTask != null) {
+            System.out.println("Removed Task: " + removedTask.toString());
+        } else {
+            System.out.println("No Task found at index 2.");
+        }
+
+        System.out.println("\nTask List After Removal:");
+        System.out.println(manager.printTaskList());
+
+        System.out.println("\nUpdating Time Logged for Task at Index 1:");
+        boolean updated = manager.updateTaskTimeLogged(1, 30);
+        System.out.println("Time Logged Update Success: " + updated);
+
+        System.out.println("\nDetailed Task List:");
+        System.out.println(manager.printTaskListDetailed());
+    }
+}
+
+package org.csu.cpsc;
+
+public class Task {
+    private String name;
+    private int originalDuration;
+    private String description;
+    private int timeLogged;
+
+    public Task(String name, int originalDuration, String description) {
+        this.name = name;
+        this.originalDuration = originalDuration;
+        this.description = description;
+        this.timeLogged = 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getOriginalDuration() {
+        return originalDuration;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getTimeLogged() {
+        return timeLogged;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOriginalDuration(int originalDuration) {
+        this.originalDuration = originalDuration;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTimeLogged(int additionalTime) {
+        if (additionalTime > 0) {
+            this.timeLogged += additionalTime;
+        } else {
+            System.out.println("Additional time must be positive.");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + 
+               "\nDescription: " + description + 
+               "\nOriginal Estimate: " + originalDuration + 
+               "\nTime Logged: " + timeLogged;
+    }
+}
